@@ -4,182 +4,392 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>엔트리 CBT 모의고사</title>
-    <!-- Tailwind CSS 로드 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 기본 폰트 설정 (웹 폰트) */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
         body {
             font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f3f4f6;
         }
-        /* 커스텀 스크롤바 (문제지 영역용) */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8; 
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+        
+        /* 화면 전환을 위한 유틸리티 */
+        .screen { display: none; }
+        .screen.active { display: flex; }
     </style>
 </head>
-<body class="bg-gray-200 h-screen w-screen overflow-hidden">
+<body class="h-screen w-screen overflow-hidden text-gray-800">
 
-    <!-- 메인 레이아웃: 문제지 단일 화면 -->
-    <div class="flex h-full w-full justify-center">
-        
-        <!-- 문제지 영역 (전체 화면 차지) -->
-        <div class="w-full bg-white flex flex-col shadow-lg z-10">
+    <!-- 1. 시작 화면 (급수 선택) -->
+    <div id="intro-screen" class="screen active flex-col items-center justify-center h-full w-full bg-gray-100 p-6">
+        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">엔트리 코딩 활용능력 평가</h1>
+            <p class="text-gray-500 mb-8">응시할 시험의 급수를 선택한 후 시작 버튼을 눌러주세요.</p>
             
-            <!-- 상단 헤더: 시험 제목 및 타이머 -->
-            <div class="bg-gray-800 text-white p-4 flex justify-between items-center shadow-md">
-                <h1 class="text-lg font-bold tracking-wide">2026 엔트리 코딩 활용능력 평가</h1>
-                <div class="flex items-center space-x-2 bg-gray-900 px-3 py-1.5 rounded border border-gray-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <div class="grid grid-cols-2 gap-6 mb-10">
+                <!-- 3급 선택 카드 -->
+                <div id="card-level-3" onclick="selectLevel('3급')" class="cursor-pointer border-2 border-blue-500 bg-blue-50 rounded-xl p-6 transition-all transform hover:scale-105">
+                    <h2 class="text-2xl font-bold text-blue-700 mb-2">3급</h2>
+                    <ul class="text-sm text-gray-600 space-y-1 text-left inline-block">
+                        <li>• 제한 시간: <strong>50분</strong></li>
+                        <li>• 출제 문항: <strong>10문제</strong></li>
+                    </ul>
+                </div>
+                
+                <!-- 2급 선택 카드 -->
+                <div id="card-level-2" onclick="selectLevel('2급')" class="cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-6 transition-all transform hover:scale-105">
+                    <h2 class="text-2xl font-bold text-gray-700 mb-2">2급</h2>
+                    <ul class="text-sm text-gray-600 space-y-1 text-left inline-block">
+                        <li>• 제한 시간: <strong>30분</strong></li>
+                        <li>• 출제 문항: <strong>3문제</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <button onclick="startExam()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-lg shadow-lg transition-colors">
+                시험 시작하기
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. 시험 화면 -->
+    <div id="exam-screen" class="screen flex-col h-full w-full bg-white shadow-xl max-w-5xl mx-auto border-x border-gray-200">
+        
+        <!-- 상단 헤더: 시험 제목, 진행률, 타이머 -->
+        <div class="bg-gray-800 text-white p-4 flex justify-between items-center shadow-md shrink-0">
+            <div>
+                <h1 id="exam-title" class="text-lg font-bold tracking-wide">2026 엔트리 코딩 활용능력 평가</h1>
+                <p id="exam-progress" class="text-xs text-gray-400 mt-1">문제 1 / 10</p>
+            </div>
+            <div class="flex items-center space-x-2 bg-gray-900 px-4 py-2 rounded-lg border border-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span id="timer" class="text-red-400 font-mono text-xl font-bold tracking-widest">00:00</span>
+            </div>
+        </div>
+
+        <!-- 문항 번호 네비게이션 -->
+        <div id="question-nav" class="bg-gray-100 px-6 py-4 border-b border-gray-200 flex space-x-3 overflow-x-auto items-center shrink-0 shadow-inner">
+            <!-- 자바스크립트를 통해 문항 번호 버튼이 생성됩니다 -->
+        </div>
+
+        <!-- 문제 내용 영역 (스크롤 가능) -->
+        <div class="flex-1 overflow-y-auto p-8 bg-white relative">
+            <div class="border-b-2 border-gray-800 pb-4 mb-6">
+                <h2 id="q-title" class="text-2xl font-bold text-gray-800">문제 1. 로딩 중...</h2>
+            </div>
+
+            <div class="space-y-6">
+                <!-- 문제 설명 -->
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <span class="w-1.5 h-4 bg-blue-600 mr-2 block"></span>
+                        문제 설명
+                    </h3>
+                    <p id="q-content" class="text-gray-700 leading-relaxed text-justify whitespace-pre-line">
+                        문제 내용을 불러오는 중입니다.
+                    </p>
+                </div>
+
+                <!-- 지시 사항 박스 -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-5">
+                    <h3 class="font-bold text-blue-800 mb-3 text-lg">[ 세부 지시 사항 ]</h3>
+                    <ul id="q-instructions" class="list-disc list-outside ml-5 text-gray-800 space-y-2 leading-relaxed">
+                        <li>지시사항 로딩 중...</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 하단 네비게이션 영역 -->
+        <div class="bg-gray-50 border-t border-gray-200 p-4 flex justify-between items-center shrink-0">
+            <div class="text-sm text-gray-500 font-medium px-2">
+                ※ 문제를 꼼꼼히 읽고 코딩을 완성하세요.
+            </div>
+            
+            <!-- 하단 우측 버튼 및 알림 그룹 -->
+            <div class="flex items-center space-x-4">
+                <!-- 저장 알림 메시지 -->
+                <span id="save-msg" class="text-green-600 font-bold text-sm transition-opacity duration-300 opacity-0">
+                    저장되었습니다.
+                </span>
+
+                <!-- 저장 버튼 -->
+                <button id="save-btn" onclick="saveQuestion()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-colors flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                     </svg>
-                    <span id="timer" class="text-red-400 font-mono text-xl font-bold tracking-widest">45:00</span>
-                </div>
-            </div>
-
-            <!-- 문제 내용 영역 (스크롤 가능) -->
-            <div class="flex-1 overflow-y-auto p-6">
-                <div class="border-b-2 border-gray-800 pb-3 mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">문제 1. 로봇 청소기 알고리즘 구현</h2>
-                    <p class="text-sm text-gray-500 mt-1">배점: 20점 | 제한시간: 45분</p>
-                </div>
-
-                <div class="space-y-6">
-                    <!-- 문제 설명 -->
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-800 mb-2 flex items-center">
-                            <span class="w-1.5 h-4 bg-blue-600 mr-2 block"></span>
-                            문제 설명
-                        </h3>
-                        <p class="text-gray-700 leading-relaxed text-justify">
-                            로봇 청소기가 방 안을 돌아다니며 먼지를 청소하는 프로그램을 작성하시오. 사용자의 마우스 움직임에 따라 청소기가 반응하며, 벽에 부딪히면 방향을 전환하여 계속해서 청소를 진행해야 합니다.
-                        </p>
-                    </div>
-
-                    <!-- 지시 사항 박스 -->
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-5">
-                        <h3 class="font-bold text-blue-800 mb-3 text-lg">[ 세부 지시 사항 ]</h3>
-                        <ul class="list-disc list-outside ml-5 text-gray-800 space-y-2 leading-relaxed">
-                            <li><span class="bg-blue-100 px-1 rounded text-blue-900 font-medium">시작하기 버튼</span>을 클릭하면 청소기가 마우스 포인터를 향해 지속적으로 이동해야 합니다.</li>
-                            <li>이동 속도는 <span class="bg-gray-200 px-1 rounded text-gray-800 text-sm">'2초 동안 이동하기'</span> 블록을 사용하여 구현하세요.</li>
-                            <li>화면의 끝(벽)에 닿으면 <span class="bg-gray-200 px-1 rounded text-gray-800 text-sm">'화면 끝에 닿으면 튕기기'</span> 블록을 적용하여 밖으로 나가지 않도록 하세요.</li>
-                            <li>청소기가 이동하는 동안 항상 <span class="font-medium text-red-600">모양을 번갈아가며</span> 바꾸어 애니메이션 효과를 주어야 합니다.</li>
-                        </ul>
-                    </div>
-                    
-                    <!-- 참고 이미지 (가상의 플레이스홀더) -->
-                    <div>
-                        <h3 class="text-sm font-bold text-gray-600 mb-2">실행 예시 화면</h3>
-                        <div class="bg-gray-100 border border-gray-300 rounded p-2 flex justify-center items-center h-40">
-                            <span class="text-gray-400 text-sm">[로봇 청소기 실행 예시 이미지가 들어갈 자리]</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 하단 답안 제출 영역 -->
-            <div class="bg-gray-50 border-t border-gray-200 p-4 flex justify-between items-center">
-                <button onclick="resetTimer()" class="text-sm text-gray-500 hover:text-gray-800 px-3 py-2 border border-gray-300 rounded bg-white transition-colors">
-                    새로고침
+                    <span>저장</span>
                 </button>
-                <button onclick="submitExam()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-8 rounded shadow transition-colors flex items-center space-x-2">
-                    <span>시험 종료 및 답안 제출</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+
+                <!-- 다음 문제 / 제출 버튼 -->
+                <button id="next-btn" onclick="nextQuestion()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-colors flex items-center space-x-2">
+                    <span id="next-btn-text">다음문제풀기</span>
+                    <svg id="next-btn-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- 자바스크립트: 타이머 및 UI 상호작용 -->
+    <!-- 3. 종료 화면 -->
+    <div id="result-screen" class="screen flex-col items-center justify-center h-full w-full bg-gray-100 p-6">
+        <div class="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md text-center">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">시험이 종료되었습니다</h2>
+            <p class="text-gray-600 mb-8">답안이 성공적으로 제출되었습니다. 수고하셨습니다!</p>
+            <button onclick="location.reload()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition-colors">
+                처음으로 돌아가기
+            </button>
+        </div>
+    </div>
+
+    <!-- 4. 타임아웃 블라인드 오버레이 (시간 초과 시 화면 전체를 덮음) -->
+    <div id="timeout-blind" class="fixed inset-0 bg-gray-900 bg-opacity-95 z-50 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-1000">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-red-500 mb-6 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h2 class="text-5xl font-bold text-white mb-6 tracking-wider">시험 시간 종료</h2>
+        <p class="text-gray-300 text-xl font-medium animate-bounce">작성된 답안이 안전하게 자동 제출되고 있습니다...</p>
+    </div>
+
     <script>
-        // 초기 시간 설정 (45분)
-        const TEST_TIME_MINUTES = 45;
-        let timeRemaining = TEST_TIME_MINUTES * 60;
-        let timerInterval;
+        /* 임시 문제 데이터 */
+        const questionsData = {
+            '3급': Array.from({length: 10}, (_, i) => ({
+                title: `문제 ${i + 1}. [3급] 임시 문제 제목`,
+                content: `이곳은 3급 ${i + 1}번 문제의 설명이 들어갈 자리입니다.\n엔트리에서 어떻게 코딩해야 할지 설명해주세요.`,
+                instructions: [
+                    '첫 번째 지시사항을 잘 따르세요.',
+                    '두 번째 조건에 맞게 블록을 조립하세요.',
+                    '마지막으로 실행 버튼을 눌러 확인하세요.'
+                ]
+            })),
+            '2급': Array.from({length: 3}, (_, i) => ({
+                title: `문제 ${i + 1}. [2급] 심화 문제 제목`,
+                content: `이곳은 2급 ${i + 1}번 문제의 설명이 들어갈 자리입니다.\n2급은 조금 더 복잡한 알고리즘을 요구합니다.`,
+                instructions: [
+                    '변수와 리스트를 활용하여 데이터를 처리하세요.',
+                    '신호 보내기/받기를 통해 객체 간 상호작용을 구현하세요.',
+                    '조건이 완료되면 특정 모양으로 바뀌게 하세요.'
+                ]
+            }))
+        };
 
+        /* 상태 변수 */
+        let currentLevel = '3급';
+        let currentQuestionIndex = 0;
+        let timeRemaining = 0;
+        let timerInterval = null;
+        let savedStatus = [];
+
+        /* UI 요소 캐싱 */
+        const screenIntro = document.getElementById('intro-screen');
+        const screenExam = document.getElementById('exam-screen');
+        const screenResult = document.getElementById('result-screen');
         const timerDisplay = document.getElementById('timer');
-        const loadingOverlay = document.getElementById('loadingOverlay');
+        const nextBtn = document.getElementById('next-btn');
+        const nextBtnText = document.getElementById('next-btn-text');
+        const nextBtnIcon = document.getElementById('next-btn-icon');
+        const timeoutBlind = document.getElementById('timeout-blind');
 
-        // 타이머 포맷 함수
+        // 급수 선택 UI 업데이트 함수
+        function selectLevel(level) {
+            currentLevel = level;
+            
+            const card3 = document.getElementById('card-level-3');
+            const card2 = document.getElementById('card-level-2');
+            
+            if (level === '3급') {
+                card3.className = "cursor-pointer border-2 border-blue-500 bg-blue-50 rounded-xl p-6 transition-all transform hover:scale-105";
+                card3.querySelector('h2').classList.replace('text-gray-700', 'text-blue-700');
+                
+                card2.className = "cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-6 transition-all transform hover:scale-100";
+                card2.querySelector('h2').classList.replace('text-blue-700', 'text-gray-700');
+            } else {
+                card2.className = "cursor-pointer border-2 border-blue-500 bg-blue-50 rounded-xl p-6 transition-all transform hover:scale-105";
+                card2.querySelector('h2').classList.replace('text-gray-700', 'text-blue-700');
+                
+                card3.className = "cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-6 transition-all transform hover:scale-100";
+                card3.querySelector('h2').classList.replace('text-blue-700', 'text-gray-700');
+            }
+        }
+
+        // 시험 시작 함수
+        function startExam() {
+            // 시간 설정 (3급 50분, 2급 30분)
+            // 테스트를 위해 5초로 설정하고 싶다면 아래 주석을 풀고 기존 코드를 주석처리하세요.
+            // timeRemaining = 5; 
+            timeRemaining = currentLevel === '3급' ? 50 * 60 : 30 * 60;
+            
+            currentQuestionIndex = 0;
+            savedStatus = new Array(questionsData[currentLevel].length).fill(false);
+
+            document.getElementById('exam-title').textContent = `2026 엔트리 코딩 활용능력 평가 [${currentLevel}]`;
+            
+            screenIntro.classList.remove('active');
+            screenExam.classList.add('active');
+
+            renderQuestion();
+            startTimer();
+        }
+
+        // 문항 네비게이션(상단 번호) 렌더링 함수
+        function renderQuestionNav() {
+            const navContainer = document.getElementById('question-nav');
+            navContainer.innerHTML = ''; 
+            
+            const currentQuestions = questionsData[currentLevel];
+            
+            for (let i = 0; i < currentQuestions.length; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i + 1;
+                btn.className = `w-10 h-10 rounded-full font-bold flex items-center justify-center transition-all shrink-0 focus:outline-none `;
+                
+                if (savedStatus[i]) {
+                    btn.classList.add('bg-green-500', 'text-white', 'shadow-md');
+                } else {
+                    btn.classList.add('bg-gray-200', 'text-gray-600', 'hover:bg-gray-300');
+                }
+                
+                if (i === currentQuestionIndex) {
+                    btn.classList.add('ring-4', 'ring-blue-300');
+                    if (!savedStatus[i]) {
+                        btn.classList.remove('text-gray-600');
+                        btn.classList.add('text-blue-800');
+                    }
+                }
+                
+                btn.onclick = () => {
+                    currentQuestionIndex = i;
+                    renderQuestion();
+                };
+                
+                navContainer.appendChild(btn);
+            }
+        }
+
+        // 문제 렌더링 함수
+        function renderQuestion() {
+            renderQuestionNav();
+
+            const currentQuestions = questionsData[currentLevel];
+            const qData = currentQuestions[currentQuestionIndex];
+
+            document.getElementById('exam-progress').textContent = `문제 ${currentQuestionIndex + 1} / ${currentQuestions.length}`;
+            document.getElementById('q-title').textContent = qData.title;
+            document.getElementById('q-content').textContent = qData.content;
+            
+            const instructionsList = document.getElementById('q-instructions');
+            instructionsList.innerHTML = '';
+            qData.instructions.forEach(inst => {
+                const li = document.createElement('li');
+                li.innerHTML = inst; 
+                instructionsList.appendChild(li);
+            });
+
+            if (currentQuestionIndex === currentQuestions.length - 1) {
+                nextBtnText.textContent = '제출하고 종료하기';
+                nextBtnIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />`;
+                nextBtn.classList.replace('bg-blue-600', 'bg-red-600');
+                nextBtn.classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
+            } else {
+                nextBtnText.textContent = '다음문제풀기';
+                nextBtnIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />`;
+                nextBtn.classList.replace('bg-red-600', 'bg-blue-600');
+                nextBtn.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
+            }
+        }
+
+        // 다음 문제 버튼 클릭 핸들러
+        function nextQuestion() {
+            const currentQuestions = questionsData[currentLevel];
+            
+            if (currentQuestionIndex < currentQuestions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+                document.querySelector('.overflow-y-auto').scrollTop = 0;
+            } else {
+                submitExam();
+            }
+        }
+
+        // 제출 및 시험 종료 함수 (결과 화면 전환)
+        function submitExam() {
+            clearInterval(timerInterval);
+            screenExam.classList.remove('active');
+            screenResult.classList.add('active');
+        }
+
+        // 시간 포맷 변환
         function formatTime(seconds) {
             const m = Math.floor(seconds / 60).toString().padStart(2, '0');
             const s = (seconds % 60).toString().padStart(2, '0');
             return `${m}:${s}`;
         }
 
-        // 타이머 업데이트
+        // 타이머 업데이트 및 타임아웃 이벤트
         function updateTimer() {
             if (timeRemaining <= 0) {
                 clearInterval(timerInterval);
                 timerDisplay.textContent = "00:00";
-                timerDisplay.classList.remove('text-red-400');
-                timerDisplay.classList.add('text-red-600', 'animate-pulse');
-                showModal("시험 종료", "제한 시간이 초과되어 시험이 종료되었습니다.");
+                
+                // 기존 투박한 alert 창 대신 블라인드 오버레이 표시
+                timeoutBlind.classList.remove('opacity-0', 'pointer-events-none');
+                timeoutBlind.classList.add('opacity-100', 'pointer-events-auto');
+
+                // 블라인드 표시 3초 후 결과 화면으로 강제 이동
+                setTimeout(() => {
+                    submitExam();
+                    // 최종 화면이 나오면 뒤에 남은 블라인드 숨김 처리
+                    timeoutBlind.classList.remove('opacity-100', 'pointer-events-auto');
+                    timeoutBlind.classList.add('opacity-0', 'pointer-events-none');
+                }, 3000);
+                
                 return;
             }
             
             timeRemaining--;
             timerDisplay.textContent = formatTime(timeRemaining);
             
-            // 5분 이하로 남았을 때 텍스트 색상 진하게
             if (timeRemaining <= 300) {
                 timerDisplay.classList.remove('text-red-400');
-                timerDisplay.classList.add('text-red-600');
+                timerDisplay.classList.add('text-red-600', 'animate-pulse');
             }
         }
 
-        // 타이머 시작
         function startTimer() {
+            timerDisplay.classList.remove('animate-pulse', 'text-red-600');
+            timerDisplay.classList.add('text-red-400');
+            timerDisplay.textContent = formatTime(timeRemaining);
             timerInterval = setInterval(updateTimer, 1000);
         }
 
-        // 타이머 리셋 (새로고침 버튼용)
-        function resetTimer() {
-            clearInterval(timerInterval);
-            timeRemaining = TEST_TIME_MINUTES * 60;
-            timerDisplay.textContent = formatTime(timeRemaining);
-            timerDisplay.classList.remove('text-red-600', 'animate-pulse');
-            timerDisplay.classList.add('text-red-400');
-            startTimer();
-        }
+        // 문항 저장 기능
+        let saveTimeout;
+        function saveQuestion() {
+            savedStatus[currentQuestionIndex] = true;
+            renderQuestionNav();
 
-        // 제출 버튼 클릭 시 모달 (alert 대체)
-        function submitExam() {
-            showModal("답안 제출", "작성하신 코드가 성공적으로 제출되었습니다. 다음 문제로 이동하시겠습니까?");
+            const msgEl = document.getElementById('save-msg');
+            msgEl.textContent = `${currentQuestionIndex + 1}번 문항이 저장되었습니다.`;
+            msgEl.classList.remove('opacity-0');
+            
+            if (saveTimeout) clearTimeout(saveTimeout);
+            
+            saveTimeout = setTimeout(() => {
+                msgEl.classList.add('opacity-0');
+            }, 2000);
         }
-
-        // 커스텀 모달 생성 함수 (alert 대신 사용)
-        function showModal(title, message) {
-            const modalHtml = `
-                <div id="customModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div class="bg-white rounded-lg shadow-xl w-96 max-w-md transform transition-all p-6">
-                        <h3 class="text-lg font-bold text-gray-900 mb-2">${title}</h3>
-                        <p class="text-gray-600 mb-6">${message}</p>
-                        <div class="flex justify-end space-x-2">
-                            <button onclick="document.getElementById('customModal').remove()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded transition-colors">닫기</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-        }
-
-        // 페이지 로드 시 실행
-        window.onload = function() {
-            startTimer();
-        };
     </script>
 </body>
 </html>
