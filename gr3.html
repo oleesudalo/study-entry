@@ -162,6 +162,19 @@
         <p class="text-gray-300 text-xl font-medium animate-bounce">작성된 답안이 안전하게 자동 제출되고 있습니다...</p>
     </div>
 
+    <!-- 5. 제출 확인 모달 -->
+    <div id="submit-confirm-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-40 hidden flex-col items-center justify-center transition-opacity">
+        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm text-center">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">제출 확인</h3>
+            <p id="unsaved-msg" class="font-medium mb-4 text-sm leading-relaxed"></p>
+            <p class="text-gray-600 mb-8 font-medium">정말 제출하시겠습니까?</p>
+            <div class="flex justify-center space-x-4">
+                <button onclick="closeSubmitModal()" class="flex-1 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-bold transition-colors">취소</button>
+                <button onclick="submitExam()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition-colors">제출하기</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         /* 임시 문제 데이터 */
         const questionsData = {
@@ -319,12 +332,40 @@
                 renderQuestion();
                 document.querySelector('.overflow-y-auto').scrollTop = 0;
             } else {
-                submitExam();
+                showSubmitModal();
             }
+        }
+
+        // 제출 확인 모달 표시 함수
+        function showSubmitModal() {
+            const unsaved = [];
+            savedStatus.forEach((saved, index) => {
+                if (!saved) unsaved.push(index + 1);
+            });
+
+            const modal = document.getElementById('submit-confirm-modal');
+            const unsavedMsg = document.getElementById('unsaved-msg');
+
+            if (unsaved.length > 0) {
+                unsavedMsg.innerHTML = `<span class="text-red-500 font-bold text-lg">저장되지 않은 문항: ${unsaved.join(', ')}번</span><br/><span class="text-gray-700 mt-2 block">제출되지 않은 번호를 확인하세요.</span>`;
+            } else {
+                unsavedMsg.innerHTML = `<span class="text-blue-600 font-bold text-lg">모든 문항이 저장되었습니다.</span>`;
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        // 제출 확인 모달 닫기 함수
+        function closeSubmitModal() {
+            const modal = document.getElementById('submit-confirm-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
         // 제출 및 시험 종료 함수 (결과 화면 전환)
         function submitExam() {
+            closeSubmitModal();
             clearInterval(timerInterval);
             screenExam.classList.remove('active');
             screenResult.classList.add('active');
