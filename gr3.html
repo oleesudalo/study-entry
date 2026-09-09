@@ -30,11 +30,11 @@
 </head>
 <body class="bg-gray-200 h-screen w-screen overflow-hidden">
 
-    <!-- 메인 레이아웃: 좌측(문제) 40%, 우측(코딩) 60% -->
-    <div class="flex h-full w-full">
+    <!-- 메인 레이아웃: 문제지 단일 화면 -->
+    <div class="flex h-full w-full justify-center">
         
-        <!-- 좌측: 문제지 영역 -->
-        <div class="w-2/5 bg-white flex flex-col border-r-2 border-gray-300 shadow-[4px_0_15px_-3px_rgba(0,0,0,0.1)] z-10">
+        <!-- 문제지 영역 (전체 화면 차지) -->
+        <div class="w-full bg-white flex flex-col shadow-lg z-10">
             
             <!-- 상단 헤더: 시험 제목 및 타이머 -->
             <div class="bg-gray-800 text-white p-4 flex justify-between items-center shadow-md">
@@ -93,34 +93,11 @@
                     새로고침
                 </button>
                 <button onclick="submitExam()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-8 rounded shadow transition-colors flex items-center space-x-2">
-                    <span>답안 제출 및 다음 문제</span>
+                    <span>시험 종료 및 답안 제출</span>
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                 </button>
-            </div>
-        </div>
-
-        <!-- 우측: 엔트리 작업 영역 연결 안내 -->
-        <div class="w-3/5 h-full relative bg-gray-100 flex flex-col justify-center items-center p-8 text-center">
-            <div class="bg-white p-10 rounded-2xl shadow-lg border border-gray-200 max-w-lg w-full">
-                <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-3">엔트리 코딩 작업소</h2>
-                <p class="text-gray-600 mb-8 leading-relaxed">
-                    엔트리 공식 홈페이지 보안 정책으로 인해 직접 임베드가 불가능합니다.<br>
-                    아래 버튼을 클릭하면 <strong>화면 우측에 코딩 창이 자동으로 정렬</strong>됩니다.
-                </p>
-                <button onclick="openEntryWorkspace()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] text-lg flex justify-center items-center space-x-3">
-                    <span>새 창에서 코딩 시작하기</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                </button>
-                <p class="text-sm text-red-500 mt-4 font-medium">* 팝업 차단이 되어있다면 반드시 해제해주세요.</p>
             </div>
         </div>
     </div>
@@ -197,29 +174,6 @@
                 </div>
             `;
             document.body.insertAdjacentHTML('beforeend', modalHtml);
-        }
-
-        // 엔트리 작업창을 화면 오른쪽에 새 창으로 여는 함수
-        function openEntryWorkspace() {
-            // 사용자의 모니터 해상도 계산
-            const screenW = window.screen.availWidth;
-            const screenH = window.screen.availHeight;
-            
-            // 화면의 오른쪽 60% 영역 계산
-            const popupW = Math.floor(screenW * 0.6);
-            const popupH = screenH;
-            const popupLeft = Math.floor(screenW * 0.4);
-            
-            // 새 창 열기 (위치 및 크기 지정)
-            const entryWindow = window.open(
-                'https://playentry.org/ws', 
-                'EntryCBTWorkspace', 
-                `width=${popupW},height=${popupH},left=${popupLeft},top=0,menubar=no,toolbar=no,location=no,status=no`
-            );
-
-            if (!entryWindow) {
-                showModal("팝업 차단 알림", "팝업이 차단되었습니다. 브라우저 주소창 우측에서 팝업 차단을 해제한 후 다시 시도해주세요.");
-            }
         }
 
         // 페이지 로드 시 실행
