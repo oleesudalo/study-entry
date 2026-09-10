@@ -49,6 +49,14 @@
                 </div>
             </div>
 
+            <!-- 새로 추가된 엔트리 화면 열기 버튼 -->
+            <button onclick="openEntryWindow()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl text-lg shadow-md transition-colors mb-4 flex items-center justify-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                <span>엔트리 화면 열기 (새 창)</span>
+            </button>
+
             <button onclick="startExam()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-lg shadow-lg transition-colors">
                 시험 시작하기
             </button>
@@ -214,6 +222,16 @@
         const nextBtnText = document.getElementById('next-btn-text');
         const nextBtnIcon = document.getElementById('next-btn-icon');
         const timeoutBlind = document.getElementById('timeout-blind');
+
+        // 엔트리 화면 새 창 열기 함수
+        function openEntryWindow() {
+            // 크롬 등 최신 브라우저에서는 팝업 형태(width, height 등 지정)로 열어야 주소창, 툴바 등이 숨겨집니다.
+            const url = 'https://playentry.org';
+            const windowName = 'EntryWorkspace';
+            const windowFeatures = 'width=1280,height=800,location=no,toolbar=no,menubar=no,scrollbars=yes,status=no,resizable=yes';
+            
+            window.open(url, windowName, windowFeatures);
+        }
 
         // 급수 선택 UI 업데이트 함수
         function selectLevel(level) {
