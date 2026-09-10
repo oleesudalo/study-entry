@@ -16,69 +16,68 @@
         ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
         
-        .screen { display: none; }
-        .screen.active { display: flex; }
+        /* 블라인드 효과용 */
+        #blind-screen {
+            transition: opacity 1.5s ease-in-out;
+        }
     </style>
 </head>
-<body class="h-screen w-screen overflow-hidden text-gray-800 relative">
+<body class="h-screen w-screen overflow-hidden text-gray-800">
 
-    <!-- 0. 접속 대기실 (런처 화면 - 일반 탭에서 접속 시 표시됨) -->
-    <div id="launcher-screen" class="screen flex-col items-center justify-center h-full w-full bg-gray-100 p-6">
-        <div class="bg-white p-10 rounded-2xl shadow-xl max-w-md w-full text-center">
-            <h1 class="text-2xl font-bold text-gray-800 mb-8">엔트리 CBT 모의고사</h1>
-            <a href="#" onclick="launchExam(); return false;" class="inline-block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl text-lg shadow-lg transition-colors">
+    <!-- 0. 대기실 (런처) 화면 -->
+    <div id="launcher-screen" class="hidden flex-col items-center justify-center h-full w-full bg-gray-100 p-6">
+        <div id="launcher-content" class="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md text-center border-t-4 border-blue-600">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">엔트리 코딩 활용능력 평가</h1>
+            <p class="text-gray-600 mb-8">준비가 완료되면 아래 버튼을 눌러주세요.</p>
+            <button onclick="openExamWindow()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-lg shadow-lg transition-colors">
                 시험장 입장하기
-            </a>
-            <p id="launcher-msg" class="text-sm text-blue-600 font-bold mt-6 hidden">시험 창이 열렸습니다!<br>이 원래 창은 닫으셔도 됩니다.</p>
+            </button>
         </div>
     </div>
 
-    <!-- 1. 시작 화면 (급수 선택 - 팝업창 내부에서만 표시됨) -->
-    <div id="intro-screen" class="screen flex-col items-center justify-center h-full w-full bg-gray-100 p-6">
+    <!-- 1. 시작 화면 (급수 선택) -->
+    <div id="intro-screen" class="hidden flex-col items-center justify-center h-full w-full bg-gray-100 p-6">
         <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl text-center">
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">엔트리 코딩 활용능력 평가</h1>
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-bold text-gray-800">엔트리 코딩 활용능력 평가</h1>
+                <!-- 엔트리 새창 열기 버튼 -->
+                <button onclick="openEntry()" class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-bold py-2 px-4 rounded-lg shadow transition-colors flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                        <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                    </svg>
+                    <span>엔트리 화면 열기</span>
+                </button>
+            </div>
             <p class="text-gray-500 mb-8">응시할 시험의 급수를 선택한 후 시작 버튼을 눌러주세요.</p>
             
-            <div class="grid grid-cols-2 gap-6 mb-8">
-                <!-- 3급 선택 카드 -->
+            <div class="grid grid-cols-2 gap-6 mb-10">
                 <div id="card-level-3" onclick="selectLevel('3급')" class="cursor-pointer border-2 border-blue-500 bg-blue-50 rounded-xl p-6 transition-all transform hover:scale-105">
                     <h2 class="text-2xl font-bold text-blue-700 mb-2">3급</h2>
-                    <ul class="text-sm text-gray-600 space-y-1 text-left inline-block">
+                    <ul class="text-sm text-gray-600 space-y-1 text-left inline-block list-none">
                         <li>• 제한 시간: <strong>50분</strong></li>
                         <li>• 출제 문항: <strong>10문제</strong></li>
                     </ul>
                 </div>
                 
-                <!-- 2급 선택 카드 -->
                 <div id="card-level-2" onclick="selectLevel('2급')" class="cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-6 transition-all transform hover:scale-105">
                     <h2 class="text-2xl font-bold text-gray-700 mb-2">2급</h2>
-                    <ul class="text-sm text-gray-600 space-y-1 text-left inline-block">
+                    <ul class="text-sm text-gray-600 space-y-1 text-left inline-block list-none">
                         <li>• 제한 시간: <strong>30분</strong></li>
                         <li>• 출제 문항: <strong>3문제</strong></li>
                     </ul>
                 </div>
             </div>
-
-            <div class="space-y-4">
-                <button onclick="startExam()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-lg shadow-lg transition-colors">
-                    시험 시작하기
-                </button>
-
-                <button onclick="openEntry()" class="w-full bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold py-3 rounded-xl text-md shadow transition-colors flex justify-center items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                        <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-                    </svg>
-                    <span>엔트리 화면 열기 (새 창)</span>
-                </button>
-            </div>
+            <button onclick="startExam()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-lg shadow-lg transition-colors">
+                시험 시작하기
+            </button>
         </div>
     </div>
 
     <!-- 2. 시험 화면 -->
-    <div id="exam-screen" class="screen flex-col h-full w-full bg-white shadow-xl max-w-5xl mx-auto border-x border-gray-200 relative">
+    <div id="exam-screen" class="hidden flex-col h-full w-full bg-white shadow-xl max-w-5xl mx-auto border-x border-gray-200 relative">
         
-        <!-- 상단 헤더: 시험 제목, 진행률, 타이머 -->
+        <!-- 상단 헤더 -->
         <div class="bg-gray-800 text-white p-4 flex justify-between items-center shadow-md shrink-0">
             <div>
                 <h1 id="exam-title" class="text-lg font-bold tracking-wide">2026 엔트리 코딩 활용능력 평가</h1>
@@ -86,14 +85,10 @@
             </div>
             <div class="flex items-center space-x-3">
                 <!-- 2급 전용 일시정지 버튼 -->
-                <button id="pause-btn" onclick="togglePause()" class="hidden bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg border border-gray-600 flex items-center space-x-1 transition-colors text-sm font-bold shadow-md">
-                    <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span id="pause-text">일시정지</span>
+                <button id="pause-btn" onclick="togglePause()" class="hidden bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold px-3 py-2 rounded-lg text-sm transition-colors shadow">
+                    일시정지
                 </button>
-
-                <div class="flex items-center space-x-2 bg-gray-900 px-4 py-2 rounded-lg border border-gray-600">
+                <div id="timer-box" class="flex items-center space-x-2 bg-gray-900 px-4 py-2 rounded-lg border border-gray-600 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -102,22 +97,49 @@
             </div>
         </div>
 
-        <!-- 하단 네비게이션 영역 -->
-        <div class="bg-gray-50 border-t border-gray-200 p-4 flex justify-between items-center shrink-0">
-            <div class="text-sm text-gray-500 font-medium px-2">
-                ※ 문제를 꼼꼼히 읽고 코딩을 완성하세요.
+        <!-- 문항 번호 네비게이션 -->
+        <div id="question-nav" class="bg-gray-100 px-6 py-4 border-b border-gray-200 flex space-x-3 overflow-x-auto items-center shrink-0 shadow-inner"></div>
+
+        <!-- 문제 내용 영역 -->
+        <div id="question-content-area" class="flex-1 overflow-y-auto p-8 bg-white relative">
+            <!-- 일시정지 오버레이 -->
+            <div id="pause-overlay" class="hidden absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">시험 일시정지</h2>
+                <p class="text-gray-600 mb-6">파일을 교체하거나 준비가 완료되면 다시 시작하세요.</p>
+                <button onclick="togglePause()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-colors text-lg">
+                    이어서 풀기
+                </button>
             </div>
-            
+
+            <div class="border-b-2 border-gray-800 pb-4 mb-6">
+                <h2 id="q-title" class="text-2xl font-bold text-gray-800">로딩 중...</h2>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <span class="w-1.5 h-4 bg-blue-600 mr-2 block"></span>문제 설명
+                    </h3>
+                    <p id="q-content" class="text-gray-700 leading-relaxed text-justify whitespace-pre-line"></p>
+                </div>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-5">
+                    <h3 class="font-bold text-blue-800 mb-3 text-lg">[ 세부 지시 사항 ]</h3>
+                    <!-- list-none으로 글머리기호 제거 -->
+                    <ul id="q-instructions" class="list-none ml-2 text-gray-800 space-y-2 leading-relaxed"></ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 하단 네비게이션 -->
+        <div class="bg-gray-50 border-t border-gray-200 p-4 flex justify-between items-center shrink-0">
+            <div class="text-sm text-gray-500 font-medium px-2">※ 문제를 꼼꼼히 읽고 코딩을 완성하세요.</div>
             <div class="flex items-center space-x-4">
                 <span id="save-msg" class="text-green-600 font-bold text-sm transition-opacity duration-300 opacity-0">저장되었습니다.</span>
-
                 <button id="save-btn" onclick="saveQuestion()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-colors flex items-center space-x-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                     </svg>
                     <span>저장</span>
                 </button>
-
                 <button id="next-btn" onclick="nextQuestion()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-colors flex items-center space-x-2">
                     <span id="next-btn-text">다음문제풀기</span>
                     <svg id="next-btn-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -129,35 +151,37 @@
     </div>
 
     <!-- 미제출 문항 확인 모달 -->
-    <div id="submit-confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center">
-        <div class="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4 text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-yellow-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">아직 저장하지 않은 문항이 있습니다!</h3>
-            <p class="text-gray-600 mb-4">제출되지 않은 번호: <strong id="unsaved-numbers" class="text-red-500"></strong></p>
-            <p class="text-sm text-gray-500 mb-8">그래도 시험을 종료하고 답안을 제출하시겠습니까?</p>
-            
-            <div class="flex justify-center space-x-4">
-                <button onclick="closeConfirmModal()" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold rounded-lg transition-colors">취소 및 돌아가기</button>
-                <button onclick="submitExam()" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors">최종 제출하기</button>
+    <div id="modal-overlay" class="hidden absolute inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <h3 class="text-lg leading-6 font-bold text-gray-900 mb-2">제출되지 않은 문항이 있습니다!</h3>
+            <p class="text-sm text-gray-500 mb-4">아래 문항의 저장이 완료되지 않았습니다.<br>다시 한번 확인해 주세요.</p>
+            <div id="unsaved-list" class="flex flex-wrap justify-center gap-2 mb-6"></div>
+            <p class="text-sm font-bold text-gray-700 mb-6">정말 이대로 제출하시겠습니까?</p>
+            <div class="flex space-x-3">
+                <button onclick="closeModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 rounded-lg transition-colors">돌아가기</button>
+                <button onclick="forceSubmit()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg transition-colors">제출하기</button>
             </div>
         </div>
     </div>
 
-    <!-- 타임아웃 블라인드 -->
-    <div id="timeout-blind" class="fixed inset-0 bg-black z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-1000">
+    <!-- 타임아웃 블라인드 화면 -->
+    <div id="blind-screen" class="hidden absolute inset-0 bg-gray-900 z-50 flex flex-col items-center justify-center opacity-0 pointer-events-none">
         <div class="text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-red-500 mx-auto mb-6 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="mx-auto h-16 w-16 text-white mb-4 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <h2 class="text-white text-4xl font-bold mb-4">시험 시간이 종료되었습니다.</h2>
-            <p class="text-gray-400">잠시 후 결과 화면으로 이동합니다...</p>
+            <h2 class="text-4xl font-bold text-white mb-2">시험 종료</h2>
+            <p class="text-xl text-gray-300">제한 시간이 초과되어 답안이 자동 제출됩니다.</p>
         </div>
     </div>
 
     <!-- 3. 종료 화면 -->
-    <div id="result-screen" class="screen flex-col items-center justify-center h-full w-full bg-gray-100 p-6">
+    <div id="result-screen" class="hidden flex-col items-center justify-center h-full w-full bg-gray-100 p-6 relative z-40">
         <div class="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md text-center">
             <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -166,264 +190,197 @@
             </div>
             <h2 class="text-2xl font-bold text-gray-800 mb-2">시험이 종료되었습니다</h2>
             <p class="text-gray-600 mb-8">답안이 성공적으로 제출되었습니다. 수고하셨습니다!</p>
-            <button onclick="location.reload()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition-colors">
-                처음으로 돌아가기
+            <button onclick="window.close()" class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                창 닫기
             </button>
         </div>
     </div>
 
     <script>
-        /* 3급 실제 문제 데이터 적용 완료 */
+        /* 완벽하게 업데이트된 문제 데이터 */
         const questionsData = {
             '3급': [
                 {
-                    title: '문제 1. 사각형을 그려요',
-                    content: '엔트리봇이 사각형을 그리도록 프로그램을 완성하시오.',
+                    title: "문제 1. 사각형을 그려요",
+                    content: "엔트리봇이 사각형을 그리도록 프로그램을 완성하시오.",
                     instructions: [
-                        'ㄱ. 시작하면 그리기를 시작한다.',
-                        'ㄴ. 이동 방향으로 80만큼 움직인다.',
-                        'ㄷ. 시계 방향으로 90도 회전한다.',
-                        'ㄹ. 이동과 회전을 반복하여 사각형을 완성한다.'
+                        "ㄱ. 시작하면 그리기를 시작한다.",
+                        "ㄴ. 이동 방향으로 80만큼 움직인다.",
+                        "ㄷ. 시계 방향으로 90도 회전한다.",
+                        "ㄹ. 이동과 회전을 반복하여 사각형을 완성한다."
                     ]
                 },
                 {
-                    title: '문제 2. 놀이기구를 탈 수 있을까요?',
-                    content: '사용자가 입력한 키에 따라 놀이기구 탑승 여부를 안내하도록 프로그램을 완성하시오.',
+                    title: "문제 2. 놀이기구를 탈 수 있을까요?",
+                    content: "사용자가 입력한 키에 따라 놀이기구 탑승 여부를 안내하도록 프로그램을 완성하시오.",
                     instructions: [
-                        'ㄱ. 시작하면 놀이공원 직원이 "키를 입력하세요."라고 묻고 기다린다.',
-                        'ㄴ. 입력한 키가 120 이상이면 “탑승할 수 있습니다.”라고 2초 동안 말한다.',
-                        'ㄷ. 그렇지 않으면 “탑승할 수 없습니다.”라고 2초 동안 말한다.'
+                        "ㄱ. 시작하면 놀이공원 직원이 '키를 입력하세요.'라고 묻고 기다린다.",
+                        "ㄴ. 입력한 키가 120 이상이면 “탑승할 수 있습니다.”라고 2초 동안 말한다.",
+                        "ㄷ. 그렇지 않으면 “탑승할 수 없습니다.”라고 2초 동안 말한다."
                     ]
                 },
                 {
-                    title: '문제 3. 벽을 피해 움직이는 로봇',
-                    content: '엔트리봇이 계속 움직이다가 벽에 닿으면 방향을 바꾸도록 프로그램을 완성하시오.',
+                    title: "문제 3. 벽을 피해 움직이는 로봇",
+                    content: "엔트리봇이 계속 움직이다가 벽에 닿으면 방향을 바꾸도록 프로그램을 완성하시오.",
                     instructions: [
-                        'ㄱ. 시작하면 엔트리봇이 이동 방향으로 20씩 계속 움직인다.',
-                        'ㄴ. 엔트리봇이 움직일 때 다음 모양으로 바꾼다.',
-                        'ㄷ. 벽에 닿으면 이동 방향을 120도 회전한다.',
-                        'ㄹ. 방향을 바꾼 뒤에도 계속 움직여야 한다.'
+                        "ㄱ. 시작하면 엔트리봇이 이동 방향으로 20씩 계속 움직인다.",
+                        "ㄴ. 엔트리봇이 움직일 때 다음 모양으로 바꾼다.",
+                        "ㄷ. 벽에 닿으면 이동 방향을 120도 회전한다.",
+                        "ㄹ. 방향을 바꾼 뒤에도 계속 움직여야 한다."
                     ]
                 },
                 {
-                    title: '문제 4. 별을 모아 점수를 올려요',
-                    content: '엔트리봇이 별을 모을 때마다 점수가 증가하도록 프로그램을 완성하시오.',
+                    title: "문제 4. 별을 모아 점수를 올려요",
+                    content: "엔트리봇이 별을 모을 때마다 점수가 증가하도록 프로그램을 완성하시오.",
                     instructions: [
-                        'ㄱ. 프로그램을 시작하면 점수를 0으로 정한다.',
-                        'ㄴ. 엔트리봇은 마우스 포인터를 따라다닌다.',
-                        'ㄷ. 엔트리봇이 별에 닿으면 점수가 1 증가하고 별이 1초간 사라졌다 나타난다.',
-                        'ㄹ. 별은 1초동안 임의의 위치로 이동하는 것을 계속 반복한다.',
-                        'ㅁ. 점수가 5가 되면 엔트리봇이 “성공!”이라고 2초 동안 말한다.'
+                        "ㄱ. 프로그램을 시작하면 점수를 0으로 정한다.",
+                        "ㄴ. 엔트리봇은 마우스 포인터를 따라다닌다.",
+                        "ㄷ. 엔트리봇이 별에 닿으면 점수가 1 증가하고 별이 1초간 사라졌다 나타난다.",
+                        "ㄹ. 별은 1초동안 임의의 위치로 이동하는 것을 계속 반복한다.",
+                        "ㅁ. 점수가 5가 되면 “성공!”이라고 2초 동안 말한다."
                     ]
                 },
                 {
-                    title: '문제 5. 에너지가 필요한 로봇',
-                    content: '로봇이 움직일 때마다 에너지가 줄어들고, 에너지가 모두 없어지면 멈추도록 프로그램을 완성하시오.',
+                    title: "문제 5. 에너지가 필요한 로봇",
+                    content: "로봇이 움직일 때마다 에너지가 줄어들고, 에너지가 모두 없어지면 멈추도록 프로그램을 완성하시오.",
                     instructions: [
-                        'ㄱ. 프로그램을 시작하면 에너지를 3으로 정한다.',
-                        'ㄴ. 스페이스 키를 눌렀을 때 에너지가 0보다 크면 학생이 오른쪽으로 30만큼 이동한다.',
-                        'ㄷ. 이동할 때마다 에너지가 1 감소한다.',
-                        'ㄹ. 에너지가 0이면 “충전이 필요합니다.”라고 말한다.'
+                        "ㄱ. 프로그램을 시작하면 에너지를 3으로 정한다.",
+                        "ㄴ. 스페이스 키를 눌렀을 때 에너지가 0보다 크면 오른쪽으로 30만큼 이동한다.",
+                        "ㄷ. 이동할 때마다 에너지가 1 감소한다.",
+                        "ㄹ. 에너지가 0이면 “충전이 필요합니다.”라고 말한다."
                     ]
                 },
                 {
-                    title: '문제 6. 용돈 저금통',
-                    content: '세 번 입력한 저금 금액의 합계를 알려주는 프로그램을 완성하시오.',
+                    title: "문제 6. 용돈 저금통",
+                    content: "세 번 입력한 저금 금액의 합계를 알려주는 프로그램을 완성하시오.",
                     instructions: [
-                        'ㄱ. 시작하면 저금액 변수를 0으로 정한다.',
-                        'ㄴ. “저금할 금액을 입력하세요.”라고 묻는다.',
-                        'ㄷ. 사용자가 입력한 금액을 현재 저금액에 더한다.',
-                        'ㄹ. 금액 입력을 모두 3번 반복한다.',
-                        'ㅁ. 마지막에 “총 저금액은 ○○원입니다.”라고 말한다.'
+                        "ㄱ. 시작하면 저금액 변수를 0으로 정한다.",
+                        "ㄴ. “저금할 금액을 입력하세요.”라고 묻는다.",
+                        "ㄷ. 사용자가 입력한 금액을 현재 저금액에 더한다.",
+                        "ㄹ. 금액 입력을 모두 3번 반복한다.",
+                        "ㅁ. 마지막에 “총 저금액은 ○○원입니다.”라고 말한다."
                     ]
                 },
                 {
-                    title: '문제 7. 참가자 명단 만들기',
-                    content: '사용자가 입력한 세 명의 이름을 참가자 리스트에 저장하고 참가자 수를 알려주는 프로그램을 완성하시오.',
+                    title: "문제 7. 참가자 명단 만들기",
+                    content: "사용자가 입력한 세 명의 이름을 참가자 리스트에 저장하고 참가자 수를 알려주는 프로그램을 완성하시오.",
                     instructions: [
-                        'ㄱ. 프로그램을 시작하면 참가자 리스트의 모든 항목을 삭제한다.',
-                        'ㄴ. “참가자 이름을 입력하세요.”라고 묻고 기다린다.',
-                        'ㄷ. 입력한 이름을 참가자 리스트의 마지막에 추가한다.',
-                        'ㄹ. 이름 입력을 3번 반복한다.',
-                        'ㅁ. 마지막에 참가자 리스트의 항목 수를 이용하여 “참가자는 총 ○명입니다.”라고 말한다.'
+                        "ㄱ. 프로그램을 시작하면 참가자 리스트의 모든 항목을 삭제한다.",
+                        "ㄴ. “참가자 이름을 입력하세요.”라고 묻고 기다린다.",
+                        "ㄷ. 입력한 이름을 참가자 리스트의 마지막에 추가한다.",
+                        "ㄹ. 이름 입력을 3번 반복한다.",
+                        "ㅁ. 마지막에 참가자 리스트의 항목 수를 이용하여 “참가자는 총 ○명입니다.”라고 말한다."
                     ]
                 },
                 {
-                    title: '문제 8. 오늘의 미션 뽑기',
-                    content: '[준비된 리스트]\n미션\n번호 | 항목\n1 | 책 읽기\n2 | 스트레칭\n3 | 물 마시기\n4 | 산책하기\n5 | 정리하기\n\n미션 리스트에서 하나를 무작위로 뽑아 안내하고, 뽑은 미션을 리스트에서 삭제하도록 프로그램을 완성하시오.',
+                    title: "문제 8. 오늘의 미션 뽑기",
+                    content: "[준비된 리스트]\n미션\n번호\t항목\n1\t책 읽기\n2\t스트레칭\n3\t물 마시기\n4\t산책하기\n5\t정리하기\n\n미션 리스트에서 하나를 무작위로 뽑아 안내하고, 뽑은 미션을 리스트에서 삭제하도록 프로그램을 완성하시오.",
                     instructions: [
-                        'ㄱ. 시작하면 번호 변수에 1부터 미션 리스트의 항목 수 사이의 무작위 수를 저장한다.',
-                        'ㄴ. 번호 번째 미션을 “오늘의 미션은 ○○입니다.”라고 말한다.',
-                        'ㄷ. 안내가 끝난 후 선택된 번호의 항목을 미션 리스트에서 삭제한다.',
-                        'ㄹ. 이미 뽑힌 미션은 리스트에서 사라져야 한다.'
+                        "ㄱ. 시작하면 번호 변수에 1부터 미션 리스트의 항목 수 사이의 무작위 수를 저장한다.",
+                        "ㄴ. 번호 번째 미션을 “오늘의 미션은 ○○입니다.”라고 말한다.",
+                        "ㄷ. 안내가 끝난 후 선택된 번호의 항목을 미션 리스트에서 삭제한다.",
+                        "ㄹ. 이미 뽑힌 미션은 리스트에서 사라져야 한다."
                     ]
                 },
                 {
-                    title: '문제 9. AI 얼굴 인원 안내',
-                    content: '카메라에 인식된 얼굴 수에 따라 다른 안내가 나오도록 프로그램을 완성하시오.',
+                    title: "문제 9. AI 얼굴 인원 안내",
+                    content: "카메라에 인식된 얼굴 수에 따라 다른 안내가 나오도록 프로그램을 완성하시오.",
                     instructions: [
-                        'ㄱ. 시작하면 비디오 화면을 보인다.',
-                        'ㄴ. 얼굴 인식을 시작한다.',
-                        'ㄷ. 인식된 얼굴을 화면에 보이게 한다.',
-                        'ㄹ. 얼굴이 한 명이면 “한 명을 인식했습니다.”라고 말한다.',
-                        'ㅁ. 얼굴이 두 명 이상이면 “여러 명을 인식했습니다.”라고 말한다.',
-                        'ㅂ. 얼굴 수를 계속 확인한다.'
+                        "ㄱ. 시작하면 비디오 화면을 보인다.",
+                        "ㄴ. 얼굴 인식을 시작한다.",
+                        "ㄷ. 인식된 얼굴을 화면에 보이게 한다.",
+                        "ㄹ. 얼굴이 한 명이면 “한 명을 인식했습니다.”라고 말한다.",
+                        "ㅁ. 얼굴이 두 명 이상이면 “여러 명을 인식했습니다.”라고 말한다.",
+                        "ㅂ. 얼굴 수를 계속 확인한다."
                     ]
                 },
                 {
-                    title: '문제 10. AI 여행 통역기',
-                    content: '사용자가 입력한 한국어 문장을 영어로 번역하여 음성으로 들려주는 프로그램을 완성하시오.',
+                    title: "문제 10. AI 여행 통역기",
+                    content: "사용자가 입력한 한국어 문장을 영어로 번역하여 음성으로 들려주는 프로그램을 완성하시오.",
                     instructions: [
-                        'ㄱ. 시작하면 “영어로 번역할 문장을 입력하세요.”라고 묻고 기다린다.',
-                        'ㄴ. 사용자가 입력한 대답을 영어로 번역한다.',
-                        'ㄷ. 번역 결과를 음성으로 읽어준다.',
-                        'ㄹ. 음성을 모두 읽은 후 “통역이 끝났습니다.”라고 말한다.'
+                        "ㄱ. 시작하면 “영어로 번역할 문장을 입력하세요.”라고 묻고 기다린다.",
+                        "ㄴ. 사용자가 입력한 대답을 영어로 번역한다.",
+                        "ㄷ. 번역 결과를 음성으로 읽어준다.",
+                        "ㄹ. 음성을 모두 읽은 후 “통역이 끝났습니다.”라고 말한다."
                     ]
                 }
             ],
             '2급': [
                 {
-                    title: '문제 1. 우주선 운석 피하기 게임',
-                    content: '우주선 운석 피하기 게임을 완성하시오.',
+                    title: "문제 1. 우주선 운석 피하기 게임",
+                    content: "",
                     instructions: [
-                        '[1-1] 키보드의 왼쪽, 오른쪽 방향키를 이용하여 우주선을 좌우로 움직일 수 있게 한다. 우주선은 화면의 좌우 경계를 벗어나지 않도록 한다. 우주선의 이동 기능은 함수를 만들어 사용한다.',
-                        '[1-2] 게임이 시작되면 운석 오브젝트가 화면 위쪽 밖에서 계속 생성되어 아래쪽으로 이동하도록 한다. 적이 생성되는 위치와 적의 모양, 내려오는 속도(3~5), 생성되는 시간 간격(0.1초~1초)은 각각 무작위로 정해지도록 한다.',
-                        '[1-3] 게임이 시작되면 게임오버 오브젝트는 화면에 나타나지 않게 하고 점수를 5점으로 설정한다. 우주선과 운석이 닿으면 점수가 1점 감소하고, 충돌한 운석은 사라지도록 한다. 운석이 화면 아래쪽을 벗어난 경우에도 사라지도록 한다.',
-                        '[1-4] 점수가 0점 이하가 되면 더 이상 게임을 진행할 수 없도록 한다. 게임이 종료되면 우주선과 적이 움직이지 않고 ‘GAME OVER’ 화면이 나타나도록 한다.'
+                        "[1-1]<br>키보드의 왼쪽, 오른쪽 방향키를 이용하여 우주선을 좌우로 움직일 수 있게 한다. 우주선은 화면의 좌우 경계를 벗어나지 않도록 한다. 우주선의 이동 기능은 함수를 만들어 사용한다.",
+                        "[1-2]<br>게임이 시작되면 운석 오브젝트가 화면 위쪽 밖에서 계속 생성되어 아래쪽으로 이동하도록 한다. 적이 생성되는 위치와 적의 모양, 내려오는 속도(3~5), 생성되는 시간 간격(0.1초~1초)은 각각 무작위로 정해지도록 한다.",
+                        "[1-3]<br>게임이 시작되면 게임오버 오브젝트는 화면에 나타나지 않게 하고 점수를 5점으로 설정한다. 우주선과 운석이 닿으면 점수가 1점 감소하고, 충돌한 운석은 사라지도록 한다. 운석이 화면 아래쪽을 벗어난 경우에도 사라지도록 한다.",
+                        "[1-4]<br>점수가 0점 이하가 되면 더 이상 게임을 진행할 수 없도록 한다. 게임이 종료되면 우주선과 적이 움직이지 않고 ‘GAME OVER’ 화면이 나타나도록 한다."
                     ]
                 },
                 {
-                    title: '문제 2. AI 이동수단 추천',
-                    content: '이동거리, 강수량, 짐의 무게 데이터를 바탕으로 이동수단을 추천하는 인공지능 프로그램을 완성하시오.',
+                    title: "문제 2. AI 이동수단 추천",
+                    content: "",
                     instructions: [
-                        '[2-1] 이동거리, 강수량, 짐의 무게를 이용하여 이동수단을 도보, 자전거, 버스 중 하나로 분류하는 결정트리 인공지능 모델을 만든다.',
-                        '[2-2] 프로그램을 시작하면 사용자의 이동거리, 강수량, 짐의 무게를 차례로 입력받아 각각 변수에 저장한다.',
-                        '[2-3] 입력한 값을 학습한 모델에 적용하여 추천 이동수단을 알아내고, 추천 결과를 글상자에 안내한다.',
-                        '[2-4] 추천 결과가 도보, 자전거, 버스일 때 각각 다른 캐릭터 모양으로 바뀌도록 하고, 해당 이동수단에 맞는 안내 문장이 나타나도록 한다.<br>&nbsp;&nbsp;&nbsp;&nbsp;• 도보 : 걷기를 추천합니다.<br>&nbsp;&nbsp;&nbsp;&nbsp;• 자전거 : 자전거를 이용하세요.<br>&nbsp;&nbsp;&nbsp;&nbsp;• 버스 : 버스로 빠르게 이동하세요.',
-                        `<div class="mt-4 pt-4 border-t border-blue-200">
-                            <h4 class="font-bold text-blue-800 mb-2">[ 학습 결과 확인 ]</h4>
-                            <p class="text-sm text-gray-700 mb-3">다음 값을 입력하여 모델의 학습 결과를 확인한다.</p>
-                            <table class="w-full text-center text-sm border-collapse border border-blue-300 bg-white">
-                                <thead class="bg-blue-100">
-                                    <tr>
-                                        <th class="border border-blue-300 py-1.5 px-2">이동거리</th>
-                                        <th class="border border-blue-300 py-1.5 px-2">강수량</th>
-                                        <th class="border border-blue-300 py-1.5 px-2">짐의 무게</th>
-                                        <th class="border border-blue-300 py-1.5 px-2">결과</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="border border-blue-300 py-1.5 px-2">1.0</td>
-                                        <td class="border border-blue-300 py-1.5 px-2">0</td>
-                                        <td class="border border-blue-300 py-1.5 px-2">1.0</td>
-                                        <td class="border border-blue-300 py-1.5 px-2 font-bold text-blue-700">도보</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="border border-blue-300 py-1.5 px-2">4.5</td>
-                                        <td class="border border-blue-300 py-1.5 px-2">1</td>
-                                        <td class="border border-blue-300 py-1.5 px-2">1.5</td>
-                                        <td class="border border-blue-300 py-1.5 px-2 font-bold text-blue-700">자전거</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="border border-blue-300 py-1.5 px-2">3.0</td>
-                                        <td class="border border-blue-300 py-1.5 px-2">18</td>
-                                        <td class="border border-blue-300 py-1.5 px-2">1.0</td>
-                                        <td class="border border-blue-300 py-1.5 px-2 font-bold text-blue-700">버스</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>`
+                        "[2-1]<br>이동거리, 강수량, 짐의 무게를 이용하여 이동수단을 도보, 자전거, 버스 중 하나로 분류하는 결정트리 인공지능 모델을 만든다.",
+                        "[2-2]<br>프로그램을 시작하면 사용자의 이동거리, 강수량, 짐의 무게를 차례로 입력받아 각각 변수에 저장한다.",
+                        "[2-3]<br>입력한 값을 학습한 모델에 적용하여 추천 이동수단을 알아내고, 추천 결과를 글상자에 안내한다.",
+                        "[2-4]<br>추천 결과가 도보, 자전거, 버스일 때 각각 다른 캐릭터 모양으로 바뀌도록 하고, 해당 이동수단에 맞는 안내 문장이 나타나도록 한다.<br>도보 : 걷기를 추천합니다.<br>자전거 : 자전거를 이용하세요.<br>버스 : 버스로 빠르게 이동하세요.",
+                        "<div class='mt-5 border-2 border-blue-100 bg-blue-50/50 rounded-lg p-4'><p class='font-bold text-blue-800 mb-2'>[학습 결과 확인]</p><p class='text-sm text-gray-700 mb-2'>다음 값을 입력하여 모델의 학습 결과를 확인한다.</p><ul class='text-sm text-gray-800 space-y-1 font-medium'><li>• 1.0 / 0 / 1.0 → 도보</li><li>• 4.5 / 1 / 1.5 → 자전거</li><li>• 3.0 / 18 / 1.0 → 버스</li></ul></div>"
                     ]
                 },
                 {
-                    title: '문제 3. AI 장비 상태 판별',
-                    content: '제공된 장비 측정 데이터를 이용하여 장비의 상태를 판별하는 인공지능 프로그램을 완성하시오.',
+                    title: "문제 3. AI 장비 상태 판별",
+                    content: "",
                     instructions: [
-                        '[3-1] 제공된 장비 측정 데이터를 이용하여 온도지수, 진동지수, 소음지수를 기준으로 장비 상태를 정상과 점검필요로 분류하는 SVM 모델을 만든다.',
-                        '[3-2] 프로그램을 시작하면 사용자가 온도지수, 진동지수, 소음지수를 차례로 입력할 수 있도록 한다.',
-                        '[3-3] 입력한 값을 학습된 인공지능 모델에 적용하여 장비의 상태를 판별하고 결과를 4초동안 말한다.',
-                        '[3-4] 장비 상태가 정상이면 2, 점검필요이면 3으로 로봇의 모양을 바꾼다.',
-                        `<div class="mt-4 pt-4 border-t border-blue-200">
-                            <h4 class="font-bold text-blue-800 mb-2">[ 학습 결과 확인 ]</h4>
-                            <p class="text-sm text-gray-700 mb-3">다음 값을 입력하여 모델의 학습 결과를 확인한다.</p>
-                            <table class="w-full text-center text-sm border-collapse border border-blue-300 bg-white">
-                                <thead class="bg-blue-100">
-                                    <tr>
-                                        <th class="border border-blue-300 py-1.5 px-2">온도지수</th>
-                                        <th class="border border-blue-300 py-1.5 px-2">진동지수</th>
-                                        <th class="border border-blue-300 py-1.5 px-2">소음지수</th>
-                                        <th class="border border-blue-300 py-1.5 px-2">결과</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="border border-blue-300 py-1.5 px-2">2</td>
-                                        <td class="border border-blue-300 py-1.5 px-2">2</td>
-                                        <td class="border border-blue-300 py-1.5 px-2">2</td>
-                                        <td class="border border-blue-300 py-1.5 px-2 font-bold text-blue-700">정상</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="border border-blue-300 py-1.5 px-2">8</td>
-                                        <td class="border border-blue-300 py-1.5 px-2">8</td>
-                                        <td class="border border-blue-300 py-1.5 px-2">8</td>
-                                        <td class="border border-blue-300 py-1.5 px-2 font-bold text-red-600">점검필요</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>`
+                        "[3-1]<br>제공된 장비 측정 데이터를 이용하여 온도지수, 진동지수, 소음지수를 기준으로 장비 상태를 정상과 점검필요로 분류하는 SVM 모델을 만든다.",
+                        "[3-2]<br>프로그램을 시작하면 사용자가 온도지수, 진동지수, 소음지수를 차례로 입력할 수 있도록 한다.",
+                        "[3-3]<br>입력한 값을 학습된 인공지능 모델에 적용하여 장비의 상태를 판별하고 결과를 4초동안 말한다.",
+                        "[3-4]<br>장비 상태가 정상이면 2, 점검필요이면 3으로 로봇의 모양을 바꾼다.",
+                        "<div class='mt-5 border-2 border-blue-100 bg-blue-50/50 rounded-lg p-4'><p class='font-bold text-blue-800 mb-2'>[학습 결과 확인]</p><p class='text-sm text-gray-700 mb-2'>다음 값을 입력하여 모델의 학습 결과를 확인한다.</p><ul class='text-sm text-gray-800 space-y-1 font-medium'><li>• 온도지수 2 / 진동지수 2 / 소음지수 2 → 정상</li><li>• 온도지수 8 / 진동지수 8 / 소음지수 8 → <span class='text-red-600 font-bold'>점검필요</span></li></ul></div>"
                     ]
                 }
             ]
         };
 
+        /* 상태 변수 */
         let currentLevel = '3급';
         let currentQuestionIndex = 0;
         let timeRemaining = 0;
         let timerInterval = null;
-        let savedStatus = []; 
-        let saveTimeout;
-        let isPaused = false; // 일시정지 상태 변수 추가
+        let savedStatus = [];
+        let isPaused = false;
 
-        const screenIntro = document.getElementById('intro-screen');
-        const screenExam = document.getElementById('exam-screen');
-        const screenResult = document.getElementById('result-screen');
-        const timerDisplay = document.getElementById('timer');
-        const nextBtn = document.getElementById('next-btn');
-        const nextBtnText = document.getElementById('next-btn-text');
-        const nextBtnIcon = document.getElementById('next-btn-icon');
-        const confirmModal = document.getElementById('submit-confirm-modal');
-        const timeoutBlind = document.getElementById('timeout-blind');
-        const pauseBtn = document.getElementById('pause-btn');
-        const pauseText = document.getElementById('pause-text');
-        const pauseIcon = document.getElementById('pause-icon');
-
-        /* 처음 접속 시 런처(대기실) 화면과 팝업 창 분기 처리 */
-        window.addEventListener('DOMContentLoaded', () => {
-            if (window.name === 'cbtMockExam') {
-                // 이미 깔끔한 팝업창으로 열린 경우 -> 런처 숨기고 급수 선택 화면 표시
-                document.getElementById('launcher-screen').classList.remove('active');
-                document.getElementById('intro-screen').classList.add('active');
+        /* 초기 진입 로직 (대기실 vs 시험창 구분) */
+        window.onload = function() {
+            if (window.name === "EntryCBTWindow") {
+                document.getElementById('intro-screen').classList.remove('hidden');
+                document.getElementById('intro-screen').classList.add('flex');
             } else {
-                // 일반 브라우저 탭으로 열린 경우 -> 런처 화면만 표시
-                document.getElementById('launcher-screen').classList.add('active');
-                document.getElementById('intro-screen').classList.remove('active');
+                document.getElementById('launcher-screen').classList.remove('hidden');
+                document.getElementById('launcher-screen').classList.add('flex');
             }
-        });
+        };
 
-        /* 시험장 입장하기 (팝업 띄우기) */
-        function launchExam() {
-            // 깔끔한 새 창 열기 (주소창, 툴바 등 숨김)
-            window.open(window.location.href, 'cbtMockExam', 'width=1000,height=900,location=no,toolbar=no,menubar=no,scrollbars=yes,resizable=yes');
-            // 기존 창에 안내 메시지 표시
-            document.getElementById('launcher-msg').classList.remove('hidden');
+        /* 창 분리 함수 (팝업) */
+        function openExamWindow() {
+            const url = window.location.href;
+            window.open(url, "EntryCBTWindow", "width=1200,height=850,location=no,menubar=no,toolbar=no,status=no,scrollbars=yes,resizable=yes");
+            
+            const launcherContent = document.getElementById('launcher-content');
+            launcherContent.innerHTML = `
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">시험 창이 열렸습니다.</h2>
+                <p class="text-gray-600">새 창에서 시험을 진행해 주세요.<br>이 원래 창은 닫으셔도 됩니다.</p>
+            `;
         }
 
-        // 엔트리 새창 열기
+        /* 엔트리 새 창 열기 (playentry.org) */
         function openEntry() {
-            window.open('https://playentry.org', 'entryWorkspace', 'width=1200,height=800,location=no,toolbar=no,menubar=no,scrollbars=yes,resizable=yes');
+            window.open("https://playentry.org", "EntryWorkspace", "width=1200,height=800,location=no,menubar=no,toolbar=no,status=no");
         }
 
+        /* 급수 선택 UI */
         function selectLevel(level) {
             currentLevel = level;
             const card3 = document.getElementById('card-level-3');
@@ -432,82 +389,42 @@
             if (level === '3급') {
                 card3.className = "cursor-pointer border-2 border-blue-500 bg-blue-50 rounded-xl p-6 transition-all transform hover:scale-105";
                 card3.querySelector('h2').classList.replace('text-gray-700', 'text-blue-700');
-                
                 card2.className = "cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-6 transition-all transform hover:scale-100";
                 card2.querySelector('h2').classList.replace('text-blue-700', 'text-gray-700');
             } else {
                 card2.className = "cursor-pointer border-2 border-blue-500 bg-blue-50 rounded-xl p-6 transition-all transform hover:scale-105";
                 card2.querySelector('h2').classList.replace('text-gray-700', 'text-blue-700');
-                
                 card3.className = "cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-6 transition-all transform hover:scale-100";
                 card3.querySelector('h2').classList.replace('text-blue-700', 'text-gray-700');
             }
         }
 
+        /* 시험 시작 */
         function startExam() {
             timeRemaining = currentLevel === '3급' ? 50 * 60 : 30 * 60;
             currentQuestionIndex = 0;
             savedStatus = new Array(questionsData[currentLevel].length).fill(false);
+
+            document.getElementById('exam-title').textContent = `2026 엔트리 코딩 활용능력 평가 [${currentLevel}]`;
             
-            // 일시정지 상태 초기화 및 2급일 때만 버튼 표시
-            isPaused = false;
+            // 2급일 경우 일시정지 버튼 표시
+            const pauseBtn = document.getElementById('pause-btn');
             if (currentLevel === '2급') {
                 pauseBtn.classList.remove('hidden');
-                pauseText.textContent = "일시정지";
-                pauseIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />`;
-                pauseBtn.className = "bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg border border-gray-600 flex items-center space-x-1 transition-colors text-sm font-bold shadow-md";
             } else {
                 pauseBtn.classList.add('hidden');
             }
 
-            document.getElementById('exam-title').textContent = `2026 엔트리 코딩 활용능력 평가 [${currentLevel}]`;
-            
-            screenIntro.classList.remove('active');
-            screenExam.classList.add('active');
+            document.getElementById('intro-screen').classList.remove('flex');
+            document.getElementById('intro-screen').classList.add('hidden');
+            document.getElementById('exam-screen').classList.remove('hidden');
+            document.getElementById('exam-screen').classList.add('flex');
 
             renderQuestion();
             startTimer();
         }
 
-        function formatTime(seconds) {
-            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-            const s = (seconds % 60).toString().padStart(2, '0');
-            return `${m}:${s}`;
-        }
-
-        function updateTimer() {
-            if (isPaused) return; // 일시정지 상태면 시간 차감 중지
-
-            if (timeRemaining <= 0) {
-                clearInterval(timerInterval);
-                timerDisplay.textContent = "00:00";
-                
-                // 타임아웃 블라인드 효과 활성화
-                timeoutBlind.classList.remove('opacity-0', 'pointer-events-none');
-                
-                // 3초 뒤 자동 제출
-                setTimeout(() => {
-                    submitExam();
-                }, 3000);
-                return;
-            }
-            
-            timeRemaining--;
-            timerDisplay.textContent = formatTime(timeRemaining);
-            
-            if (timeRemaining <= 300) {
-                timerDisplay.classList.remove('text-red-400');
-                timerDisplay.classList.add('text-red-600', 'animate-pulse');
-            }
-        }
-
-        function startTimer() {
-            timerDisplay.classList.remove('animate-pulse', 'text-red-600');
-            timerDisplay.classList.add('text-red-400');
-            timerDisplay.textContent = formatTime(timeRemaining);
-            timerInterval = setInterval(updateTimer, 1000);
-        }
-
+        /* 문항 번호 렌더링 */
         function renderQuestionNav() {
             const navContainer = document.getElementById('question-nav');
             navContainer.innerHTML = ''; 
@@ -527,8 +444,7 @@
                 if (i === currentQuestionIndex) {
                     btn.classList.add('ring-4', 'ring-blue-300');
                     if (!savedStatus[i]) {
-                        btn.classList.remove('text-gray-600');
-                        btn.classList.add('text-blue-800');
+                        btn.classList.replace('text-gray-600', 'text-blue-800');
                     }
                 }
                 
@@ -540,6 +456,7 @@
             }
         }
 
+        /* 문제 렌더링 */
         function renderQuestion() {
             renderQuestionNav();
             const currentQuestions = questionsData[currentLevel];
@@ -547,7 +464,14 @@
 
             document.getElementById('exam-progress').textContent = `문제 ${currentQuestionIndex + 1} / ${currentQuestions.length}`;
             document.getElementById('q-title').textContent = qData.title;
-            document.getElementById('q-content').textContent = qData.content;
+            
+            const qContentEl = document.getElementById('q-content');
+            if(qData.content.trim() === "") {
+                qContentEl.parentElement.style.display = 'none';
+            } else {
+                qContentEl.parentElement.style.display = 'block';
+                qContentEl.textContent = qData.content;
+            }
             
             const instructionsList = document.getElementById('q-instructions');
             instructionsList.innerHTML = '';
@@ -556,6 +480,10 @@
                 li.innerHTML = inst; 
                 instructionsList.appendChild(li);
             });
+
+            const nextBtnText = document.getElementById('next-btn-text');
+            const nextBtnIcon = document.getElementById('next-btn-icon');
+            const nextBtn = document.getElementById('next-btn');
 
             if (currentQuestionIndex === currentQuestions.length - 1) {
                 nextBtnText.textContent = '제출하고 종료하기';
@@ -570,86 +498,142 @@
             }
         }
 
-        function saveQuestion() {
-            savedStatus[currentQuestionIndex] = true;
-            renderQuestionNav();
-            
-            const msgEl = document.getElementById('save-msg');
-            msgEl.textContent = `${currentQuestionIndex + 1}번 문항이 저장되었습니다.`;
-            msgEl.classList.remove('opacity-0');
-            
-            if (saveTimeout) clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => {
-                msgEl.classList.add('opacity-0');
-            }, 2000);
+        /* 일시정지 (2급) */
+        function togglePause() {
+            isPaused = !isPaused;
+            const overlay = document.getElementById('pause-overlay');
+            const pauseBtn = document.getElementById('pause-btn');
+            const timerBox = document.getElementById('timer-box');
+
+            if (isPaused) {
+                overlay.classList.remove('hidden');
+                pauseBtn.textContent = '다시시작';
+                pauseBtn.classList.replace('bg-yellow-500', 'bg-green-500');
+                pauseBtn.classList.replace('hover:bg-yellow-600', 'hover:bg-green-600');
+                timerBox.classList.add('animate-pulse', 'bg-red-900');
+            } else {
+                overlay.classList.add('hidden');
+                pauseBtn.textContent = '일시정지';
+                pauseBtn.classList.replace('bg-green-500', 'bg-yellow-500');
+                pauseBtn.classList.replace('hover:bg-green-600', 'hover:bg-yellow-600');
+                timerBox.classList.remove('animate-pulse', 'bg-red-900');
+            }
         }
 
+        /* 다음/제출 버튼 */
         function nextQuestion() {
             const currentQuestions = questionsData[currentLevel];
             
             if (currentQuestionIndex < currentQuestions.length - 1) {
                 currentQuestionIndex++;
                 renderQuestion();
-                document.querySelector('.overflow-y-auto').scrollTop = 0;
+                document.getElementById('question-content-area').scrollTop = 0;
             } else {
-                trySubmitExam();
+                checkSubmit();
             }
         }
 
-        function trySubmitExam() {
-            // 저장되지 않은 문항 번호 찾기
-            const unsavedNumbers = [];
-            for (let i = 0; i < savedStatus.length; i++) {
-                if (!savedStatus[i]) {
-                    unsavedNumbers.push(i + 1);
-                }
-            }
+        /* 저장 안 된 문항 확인 팝업 */
+        function checkSubmit() {
+            const unsaved = [];
+            savedStatus.forEach((status, index) => {
+                if (!status) unsaved.push(index + 1);
+            });
 
-            if (unsavedNumbers.length > 0) {
-                // 미제출 문항이 있으면 모달 표시
-                document.getElementById('unsaved-numbers').textContent = unsavedNumbers.join(', ');
-                confirmModal.classList.remove('hidden');
-                confirmModal.classList.add('flex');
+            if (unsaved.length > 0) {
+                const listDiv = document.getElementById('unsaved-list');
+                listDiv.innerHTML = unsaved.map(num => `<span class="bg-red-100 text-red-800 font-bold px-3 py-1 rounded-full text-sm">${num}번</span>`).join('');
+                document.getElementById('modal-overlay').classList.remove('hidden');
             } else {
-                // 모두 제출되었으면 바로 종료
                 submitExam();
             }
         }
 
-        function closeConfirmModal() {
-            confirmModal.classList.add('hidden');
-            confirmModal.classList.remove('flex');
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.add('hidden');
         }
 
+        function forceSubmit() {
+            closeModal();
+            submitExam();
+        }
+
+        /* 제출 완료 */
         function submitExam() {
             clearInterval(timerInterval);
-            
-            // 모달 및 블라인드 숨기기 (안전장치)
-            confirmModal.classList.add('hidden');
-            confirmModal.classList.remove('flex');
-            timeoutBlind.classList.add('opacity-0', 'pointer-events-none');
-            
-            // 화면 전환
-            screenExam.classList.remove('active');
-            screenResult.classList.add('active');
+            document.getElementById('exam-screen').classList.remove('flex');
+            document.getElementById('exam-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('result-screen').classList.add('flex');
         }
 
-        // 2급 전용 일시정지/다시시작 토글 함수
-        function togglePause() {
-            isPaused = !isPaused;
-            if (isPaused) {
-                // 일시정지 됨 -> 다시시작 버튼으로 변경 (눈에 띄게 노란색 깜빡임)
-                pauseText.textContent = "다시시작";
-                pauseIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />`;
-                pauseBtn.className = "bg-yellow-500 hover:bg-yellow-600 text-yellow-900 px-4 py-2 rounded-lg border border-yellow-500 flex items-center space-x-1 transition-colors text-sm font-bold shadow-md animate-pulse";
-                timerDisplay.classList.add('opacity-50'); // 타이머 흐리게
-            } else {
-                // 다시시작 됨 -> 일시정지 버튼으로 복구
-                pauseText.textContent = "일시정지";
-                pauseIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />`;
-                pauseBtn.className = "bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg border border-gray-600 flex items-center space-x-1 transition-colors text-sm font-bold shadow-md";
-                timerDisplay.classList.remove('opacity-50');
+        /* 시간 포맷 */
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        /* 타이머 업데이트 */
+        function updateTimer() {
+            if (isPaused) return;
+
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('timer').textContent = "00:00";
+                
+                const blindScreen = document.getElementById('blind-screen');
+                blindScreen.classList.remove('hidden');
+                
+                // 블라인드 서서히 나타남
+                setTimeout(() => {
+                    blindScreen.classList.remove('opacity-0');
+                    blindScreen.classList.add('opacity-100');
+                    blindScreen.style.pointerEvents = "auto";
+                }, 50);
+                
+                // 3초 뒤 결과창
+                setTimeout(() => {
+                    blindScreen.classList.add('hidden');
+                    submitExam();
+                }, 3000);
+                return;
             }
+            
+            timeRemaining--;
+            const timerDisplay = document.getElementById('timer');
+            timerDisplay.textContent = formatTime(timeRemaining);
+            
+            if (timeRemaining <= 300) {
+                timerDisplay.classList.remove('text-red-400');
+                timerDisplay.classList.add('text-red-600', 'animate-pulse');
+            }
+        }
+
+        /* 타이머 시작 */
+        function startTimer() {
+            const timerDisplay = document.getElementById('timer');
+            timerDisplay.classList.remove('animate-pulse', 'text-red-600');
+            timerDisplay.classList.add('text-red-400');
+            timerDisplay.textContent = formatTime(timeRemaining);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        /* 문항 저장 */
+        let saveTimeout;
+        function saveQuestion() {
+            savedStatus[currentQuestionIndex] = true;
+            renderQuestionNav();
+
+            const msgEl = document.getElementById('save-msg');
+            msgEl.textContent = `${currentQuestionIndex + 1}번 문항이 저장되었습니다.`;
+            msgEl.classList.remove('opacity-0');
+            
+            if (saveTimeout) clearTimeout(saveTimeout);
+            
+            saveTimeout = setTimeout(() => {
+                msgEl.classList.add('opacity-0');
+            }, 2000);
         }
     </script>
 </body>
