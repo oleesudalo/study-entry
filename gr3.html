@@ -16,7 +16,6 @@
         ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
         
-        /* 블라인드 효과용 */
         #blind-screen {
             transition: opacity 1.5s ease-in-out;
         }
@@ -63,6 +62,7 @@
                 <div id="card-level-2" onclick="selectLevel('2급')" class="cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-6 transition-all transform hover:scale-105">
                     <h2 class="text-2xl font-bold text-gray-700 mb-2">2급</h2>
                     <ul class="text-sm text-gray-600 space-y-1 text-left inline-block list-none">
+                        <!-- 40분으로 수정 반영됨 -->
                         <li>• 제한 시간: <strong>40분</strong></li>
                         <li>• 출제 문항: <strong>3문제</strong></li>
                     </ul>
@@ -111,8 +111,10 @@
                 </button>
             </div>
 
-            <div class="border-b-2 border-gray-800 pb-4 mb-6">
+            <div class="border-b-2 border-gray-800 pb-4 mb-6 flex justify-between items-center">
                 <h2 id="q-title" class="text-2xl font-bold text-gray-800">로딩 중...</h2>
+                <!-- 파일 다운로드 영역 추가 -->
+                <div id="q-file-area" class="hidden"></div>
             </div>
             <div class="space-y-6">
                 <div>
@@ -123,7 +125,6 @@
                 </div>
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-5">
                     <h3 class="font-bold text-blue-800 mb-3 text-lg">[ 세부 지시 사항 ]</h3>
-                    <!-- list-none으로 글머리기호 제거 -->
                     <ul id="q-instructions" class="list-none ml-2 text-gray-800 space-y-2 leading-relaxed"></ul>
                 </div>
             </div>
@@ -197,7 +198,6 @@
     </div>
 
     <script>
-        /* 완벽하게 업데이트된 문제 데이터 */
         const questionsData = {
             '3급': [
                 {
@@ -309,6 +309,7 @@
                 {
                     title: "문제 1. 우주선 운석 피하기 게임",
                     content: "",
+                    // 1번 문제는 첨부 파일 없음
                     instructions: [
                         "[1-1]<br>키보드의 왼쪽, 오른쪽 방향키를 이용하여 우주선을 좌우로 움직일 수 있게 한다. 우주선은 화면의 좌우 경계를 벗어나지 않도록 한다. 우주선의 이동 기능은 함수를 만들어 사용한다.",
                         "[1-2]<br>게임이 시작되면 운석 오브젝트가 화면 위쪽 밖에서 계속 생성되어 아래쪽으로 이동하도록 한다. 적이 생성되는 위치와 적의 모양, 내려오는 속도(3~5), 생성되는 시간 간격(0.1초~1초)은 각각 무작위로 정해지도록 한다.",
@@ -319,6 +320,7 @@
                 {
                     title: "문제 2. AI 이동수단 추천",
                     content: "",
+                    file: "02_이동수단추천_결정트리_데이터.xlsx", // 첨부파일 적용
                     instructions: [
                         "[2-1]<br>이동거리, 강수량, 짐의 무게를 이용하여 이동수단을 도보, 자전거, 버스 중 하나로 분류하는 결정트리 인공지능 모델을 만든다.",
                         "[2-2]<br>프로그램을 시작하면 사용자의 이동거리, 강수량, 짐의 무게를 차례로 입력받아 각각 변수에 저장한다.",
@@ -330,6 +332,7 @@
                 {
                     title: "문제 3. AI 장비 상태 판별",
                     content: "",
+                    file: "03_SVM_장비상태판별_데이터.xlsx", // 첨부파일 적용
                     instructions: [
                         "[3-1]<br>제공된 장비 측정 데이터를 이용하여 온도지수, 진동지수, 소음지수를 기준으로 장비 상태를 정상과 점검필요로 분류하는 SVM 모델을 만든다.",
                         "[3-2]<br>프로그램을 시작하면 사용자가 온도지수, 진동지수, 소음지수를 차례로 입력할 수 있도록 한다.",
@@ -401,6 +404,7 @@
 
         /* 시험 시작 */
         function startExam() {
+            // 2급 시간 40분으로 적용됨
             timeRemaining = currentLevel === '3급' ? 50 * 60 : 40 * 60;
             currentQuestionIndex = 0;
             savedStatus = new Array(questionsData[currentLevel].length).fill(false);
@@ -465,6 +469,23 @@
             document.getElementById('exam-progress').textContent = `문제 ${currentQuestionIndex + 1} / ${currentQuestions.length}`;
             document.getElementById('q-title').textContent = qData.title;
             
+            /* 다운로드 버튼 렌더링 로직 */
+            const fileArea = document.getElementById('q-file-area');
+            if (qData.file) {
+                fileArea.innerHTML = `
+                    <a href="${qData.file}" download="${qData.file}" class="flex items-center space-x-2 bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 px-4 rounded-lg border border-blue-200 transition-colors text-sm font-bold shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span>${qData.file} 다운로드</span>
+                    </a>
+                `;
+                fileArea.classList.remove('hidden');
+            } else {
+                fileArea.innerHTML = '';
+                fileArea.classList.add('hidden');
+            }
+
             const qContentEl = document.getElementById('q-content');
             if(qData.content.trim() === "") {
                 qContentEl.parentElement.style.display = 'none';
