@@ -63,7 +63,7 @@
                 <div id="card-level-2" onclick="selectLevel('2급')" class="cursor-pointer border-2 border-gray-200 bg-white rounded-xl p-6 transition-all transform hover:scale-105">
                     <h2 class="text-2xl font-bold text-gray-700 mb-2">2급</h2>
                     <ul class="text-sm text-gray-600 space-y-1 text-left inline-block list-none">
-                        <li>• 제한 시간: <strong>30분</strong></li>
+                        <li>• 제한 시간: <strong>40분</strong></li>
                         <li>• 출제 문항: <strong>3문제</strong></li>
                     </ul>
                 </div>
@@ -401,7 +401,7 @@
 
         /* 시험 시작 */
         function startExam() {
-            timeRemaining = currentLevel === '3급' ? 50 * 60 : 30 * 60;
+            timeRemaining = currentLevel === '3급' ? 50 * 60 : 40 * 60;
             currentQuestionIndex = 0;
             savedStatus = new Array(questionsData[currentLevel].length).fill(false);
 
