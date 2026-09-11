@@ -320,7 +320,8 @@
                 {
                     title: "문제 2. AI 이동수단 추천",
                     content: "",
-                    file: "02_이동수단추천_결정트리_데이터.xlsx", // 첨부파일 적용
+                    file: "02_이동수단추천_결정트리_데이터.xlsx",
+                    fileUrl: "https://github.com/oleesudalo/study-entry/raw/refs/heads/main/02_%EC%9D%B4%EB%8F%99%EC%88%98%EB%8B%A8%EC%B6%94%EC%B2%9C_%EA%B2%B0%EC%A0%95%ED%8A%B8%EB%A6%AC_%EB%8D%B0%EC%9D%B4%ED%84%B0.xlsx",
                     instructions: [
                         "[2-1]<br>이동거리, 강수량, 짐의 무게를 이용하여 이동수단을 도보, 자전거, 버스 중 하나로 분류하는 결정트리 인공지능 모델을 만든다.",
                         "[2-2]<br>프로그램을 시작하면 사용자의 이동거리, 강수량, 짐의 무게를 차례로 입력받아 각각 변수에 저장한다.",
@@ -332,7 +333,8 @@
                 {
                     title: "문제 3. AI 장비 상태 판별",
                     content: "",
-                    file: "03_SVM_장비상태판별_데이터.xlsx", // 첨부파일 적용
+                    file: "03_SVM_장비상태판별_데이터.xlsx",
+                    fileUrl: "https://github.com/oleesudalo/study-entry/raw/refs/heads/main/03_SVM_%EC%9E%A5%EB%B9%84%EC%83%81%ED%83%9C%ED%8C%90%EB%B3%84_%EB%8D%B0%EC%9D%B4%ED%84%B0.xlsx",
                     instructions: [
                         "[3-1]<br>제공된 장비 측정 데이터를 이용하여 온도지수, 진동지수, 소음지수를 기준으로 장비 상태를 정상과 점검필요로 분류하는 SVM 모델을 만든다.",
                         "[3-2]<br>프로그램을 시작하면 사용자가 온도지수, 진동지수, 소음지수를 차례로 입력할 수 있도록 한다.",
@@ -460,7 +462,6 @@
             }
         }
 
-        /* 문제 렌더링 */
         function renderQuestion() {
             renderQuestionNav();
             const currentQuestions = questionsData[currentLevel];
@@ -471,27 +472,19 @@
             
             /* 다운로드 버튼 렌더링 로직 */
             const fileArea = document.getElementById('q-file-area');
-            if (qData.file) {
+            if (qData.file && qData.fileUrl) {
                 fileArea.innerHTML = `
-                    <a href="${qData.file}" download="${qData.file}" class="flex items-center space-x-2 bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 px-4 rounded-lg border border-blue-200 transition-colors text-sm font-bold shadow-sm">
+                    <button onclick="window.location.href='${qData.fileUrl}'" class="flex items-center space-x-2 bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 px-4 rounded-lg border border-blue-200 transition-colors text-sm font-bold shadow-sm focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
                         <span>${qData.file} 다운로드</span>
-                    </a>
+                    </button>
                 `;
                 fileArea.classList.remove('hidden');
             } else {
                 fileArea.innerHTML = '';
                 fileArea.classList.add('hidden');
-            }
-
-            const qContentEl = document.getElementById('q-content');
-            if(qData.content.trim() === "") {
-                qContentEl.parentElement.style.display = 'none';
-            } else {
-                qContentEl.parentElement.style.display = 'block';
-                qContentEl.textContent = qData.content;
             }
             
             const instructionsList = document.getElementById('q-instructions');
