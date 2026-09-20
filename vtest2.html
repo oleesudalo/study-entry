@@ -376,7 +376,7 @@
                     title: "문제 4. [파이썬] 입장료 계산기",
                     content: "나이를 입력받아 놀이공원 입장료를 계산하는 파이썬 코드를 작성하시오.",
                     isPython: true,
-                    skeletonCode: "age = int(input(\"나이를 입력하세요: \"))\n\n# 조건: 나이가 8 미만이거나 65 이상\n______________________________\n    print(\"무료입니다.\")\n# 조건: 나이가 8 이상 19 이하\n______________________________\n    print(\"입장료는 5000원입니다.\")\n# 그 외의 경우\n______________________________\n    print(\"입장료는 10000원입니다.\")",
+                    skeletonCode: "age = int(input(\"나이를 입력하세요: \"))\n\n______________________________\n    print(\"무료입니다.\")\n______________________________\n    print(\"입장료는 5000원입니다.\")\n______________________________\n    print(\"입장료는 10000원입니다.\")",
                     instructions: [
                         "[4-1]<br>사용자에게 <code>나이를 입력하세요: </code>라고 묻고 정수로 입력받아 <code>age</code> 변수에 저장한다.",
                         "[4-2]<br>나이가 8 미만이거나 65 이상이면 <code>무료입니다.</code>를 출력한다.",
@@ -388,7 +388,7 @@
                     title: "문제 5. [파이썬] 짝수의 합 구하기",
                     content: "1부터 입력받은 숫자 N까지의 정수 중 짝수만 더하는 파이썬 코드를 작성하시오.",
                     isPython: true,
-                    skeletonCode: "n = int(input(\"숫자를 입력하세요: \"))\ntotal = 0\n\n# 1부터 n까지 반복\n______________________________\n    if i % 2 == 0:\n        # 짝수일 경우 total에 i를 더하기\n        ______________________________\n\nprint(\"짝수의 합:\", total)",
+                    skeletonCode: "n = int(input(\"숫자를 입력하세요: \"))\ntotal = 0\n\n______________________________\n    if i % 2 == 0:\n        ______________________________\n\nprint(\"짝수의 합:\", total)",
                     instructions: [
                         "[5-1]<br>사용자에게 <code>숫자를 입력하세요: </code>라고 묻고 정수로 변환하여 <code>n</code> 변수에 저장한다.",
                         "[5-2]<br>반복문(<code>for</code>)을 사용하여 1부터 <code>n</code>까지의 숫자 중 짝수를 판별한다.",
@@ -400,7 +400,7 @@
                     title: "문제 6. [파이썬] 리스트에서 최댓값 찾기",
                     content: "5명의 학생 점수 리스트에서 가장 높은 점수를 찾아 출력하는 파이썬 코드를 작성하시오.",
                     isPython: true,
-                    skeletonCode: "scores = [78, 92, 85, 99, 88]\n\n# max_score 변수를 리스트의 첫 번째 값으로 초기화\n______________________________\n\nfor score in scores:\n    # 현재 점수가 max_score보다 큰지 확인\n    ______________________________\n        max_score = score\n\nprint(\"최고 점수는\", max_score, \"점입니다.\")",
+                    skeletonCode: "scores = [78, 92, 85, 99, 88]\n\n# max_score 변수를 리스트의 첫 번째 값으로 초기화\n______________________________\n\nfor score in scores:\n    ______________________________\n        max_score = score\n\nprint(\"최고 점수는\", max_score, \"점입니다.\")",
                     instructions: [
                         "[6-1]<br>점수 리스트 <code>scores = [78, 92, 85, 99, 88]</code>가 주어졌다.",
                         "[6-2]<br>파이썬의 내장 함수 <code>max()</code>를 사용하지 않고 <code>for</code> 반복문을 활용하여 최댓값을 찾는다.",
@@ -412,7 +412,7 @@
                     title: "문제 7. [파이썬] 구구단 함수 만들기",
                     content: "원하는 단을 입력받아 구구단을 출력하는 파이썬 함수를 작성하시오.",
                     isPython: true,
-                    skeletonCode: "# print_gugudan 함수 정의 (매개변수 dan)\n______________________________\n    for i in range(1, 10):\n        print(f\"{dan} x {i} = {dan * i}\")\n\nnum = int(input(\"출력할 단을 입력하세요: \"))\n\n# 입력받은 num을 인자로 하여 함수 호출\n______________________________",
+                    skeletonCode: "# print_gugudan 함수 정의 (매개변수 dan)\n______________________________\n    for i in range(1, 10):\n        print(f\"{dan} x {i} = {dan * i}\")\n\nnum = int(input(\"출력할 단을 입력하세요: \"))\n\n______________________________",
                     instructions: [
                         "[7-1]<br><code>print_gugudan(dan)</code> 이라는 이름의 함수를 정의한다.",
                         "[7-2]<br>함수 내부에서 반복문을 사용하여 입력받은 <code>dan</code>의 1부터 9까지 곱한 결과를 출력한다.",
