@@ -32,9 +32,15 @@
     <!-- 0. 대기실 (런처) 화면 -->
     <div id="launcher-screen" class="hidden flex-col items-center justify-center h-full w-full bg-gray-100 p-6">
         <div id="launcher-content" class="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md text-center border-t-4 border-blue-600">
-            <h1 class="text-3xl font-bold text-gray-800 mb-4">엔트리·파이썬 코딩 평가</h1>
-            <p class="text-gray-600 mb-8">준비가 완료되면 아래 버튼을 눌러주세요.</p>
-            <button onclick="openExamWindow()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-lg shadow-lg transition-colors">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">엔트리 코딩 활용능력 평가</h1>
+            <p class="text-gray-600 mb-6">준비가 완료되면 비밀번호를 입력하고 아래 버튼을 눌러주세요.</p>
+            
+            <div class="mb-6">
+                <input type="password" id="exam-password" placeholder="비밀번호 입력" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500 text-center text-xl tracking-[0.2em] transition-colors" onkeypress="if(event.key === 'Enter') verifyPassword()">
+                <p id="password-error" class="hidden text-red-500 text-sm mt-2 font-bold animate-pulse">비밀번호가 올바르지 않습니다.</p>
+            </div>
+
+            <button onclick="verifyPassword()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-lg shadow-lg transition-colors">
                 시험장 입장하기
             </button>
         </div>
@@ -461,6 +467,26 @@
             });
         };
 
+        /* 비밀번호 확인 로직 */
+        function verifyPassword() {
+            const pwdInput = document.getElementById('exam-password');
+            const errorMsg = document.getElementById('password-error');
+            
+            if (pwdInput.value === 'alfocodna') {
+                errorMsg.classList.add('hidden');
+                openExamWindow();
+            } else {
+                errorMsg.classList.remove('hidden');
+                pwdInput.classList.add('border-red-500', 'bg-red-50');
+                setTimeout(() => {
+                    pwdInput.classList.remove('border-red-500', 'bg-red-50');
+                }, 1000);
+                pwdInput.value = '';
+                pwdInput.focus();
+            }
+        }
+
+        /* 창 분리 함수 (팝업) */
         function openExamWindow() {
             const url = window.location.href;
             window.open(url, "EntryCBTWindow", "width=1200,height=850,location=no,menubar=no,toolbar=no,status=no,scrollbars=yes,resizable=yes");
